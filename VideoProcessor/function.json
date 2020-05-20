@@ -1,0 +1,20 @@
+{
+  "scriptFile": "__init__.py",
+  "bindings": [
+    {
+      "name": "msg",
+      "type": "queueTrigger",
+      "direction": "in",
+      "queueName": "autoyahtzeeprocessor",
+      "connection": "AZURE_STORAGE_CONNECTION_STRING"
+    },
+    {
+      "name": "inputblob",
+      "type": "blob",
+      "dataType": "binary",
+      "direction": "in",
+      "path": "autoyahtzee-raw-video-container/{queueTrigger}",
+      "connection": "AZURE_STORAGE_CONNECTION_STRING"
+    }
+  ]
+}

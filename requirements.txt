@@ -1,0 +1,6 @@
+azure-functions
+tensorflow==1.13.1
+opencv-python
+scikit-learn
+azure-storage-blob
+pyodbc
