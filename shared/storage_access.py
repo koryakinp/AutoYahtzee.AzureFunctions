@@ -1,4 +1,5 @@
 from azure.storage.blob import BlobServiceClient
+from azure.core.exceptions import ResourceNotFoundError
 
 
 class StorageAccess:
@@ -31,5 +32,38 @@ class StorageAccess:
     def upload_image(self, filename, throw_id):
         with open(filename, "rb") as data:
             self.jpg_container.upload_blob(throw_id + '.jpg', data)
+
+    def clear_blobs(self, throw_id, prediction_ids):
+        self.delete_mp4_if_exists(throw_id)
+        self.delete_webm_if_exists(throw_id)
+        self.delete_jpg_if_exists(throw_id)
+
+        for prediction_id in prediction_ids:
+            self.delete_prediction_if_exists(prediction_id)
+
+    def delete_mp4_if_exists(self, throw_id):
+        if check_if_blob_exists(blob_name, self.mp4_container):
+            self.mp4_container.delete_blob(throw_id + '.mp4')
+
+    def delete_webm_if_exists(self, throw_id):
+        if check_if_blob_exists(blob_name, self.webm_container):
+            self.webm_container.delete_blob(throw_id + '.webm')
+
+    def delete_jpg_if_exists(self, throw_id):
+        if check_if_blob_exists(blob_name, self.jpg_container):
+            self.jpg_container.delete_blob(throw_id + '.jpg')
+
+    def delete_prediction_if_exists(self, prediction_id):
+        if check_if_blob_exists(blob_name, self.prediction_container):
+            self.prediction_container.delete_blob(prediction_id + '.jpg')
+
+
+    def check_if_blob_exists(blob_name, container):
+        try:
+            blob_properties = container.get_blob_client(blob_name).get_blob_properties()
+            return True
+        except ResourceNotFoundError as ex:
+            print(ex)
+            return False
 
 

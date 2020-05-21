@@ -7,31 +7,19 @@ class DataAccess:
         self.cnxn = pyodbc.connect(cs)
         self.cursor = self.cnxn.cursor()
 
-    def update_result(self, throw_id, result):
+    def get_predictions(self, throw_id):
         self.cursor.execute(
-            "UPDATE Throws " +
-            "SET Result = ?, ResultProcessedDate = GETUTCDATE() " +
-            "WHERE Id = ?", result, throw_id)
-        self.cnxn.commit()
+          "SELECT Id FROM Predictions WHERE ThrowId = ?", throw_id)
+        rows = self.cursor.fetchall()
 
-    def is_throw_exists(self, throw_id):
-        self.cursor.execute(
-          "SELECT 1 FROM Throws WHERE Id = ?", throw_id)
-        return self.cursor.fetchone() is not None
-
-    def is_experiment_exists(self, experiment_id):
-        self.cursor.execute(
-          "SELECT 1 FROM Experiments WHERE Id = ?", experiment_id)
-        return self.cursor.fetchone() is not None
-
-    def insert_experiment(self, experiment_id):
-        self.cursor.execute(
-            "INSERT INTO Experiments(Id, Name, NumberOfDices) VALUES (?,?,?)",
-            experiment_id, 'Six Dices', 6)
-        self.cnxn.commit()
+        return [row.Id for row in rows]
 
     def insert_throw(self, throw_id):
         self.cursor.execute("INSERT INTO Throws (Id) VALUES (?)", throw_id)
+        self.cnxn.commit()
+
+    def delete_throw(self, throw_id):
+        self.cursor.execute("DELETE FROM Throws WHERE Id = ?", throw_id)
         self.cnxn.commit()
 
     def insert_prediction(self, di, throw_id, prediction, confidence):

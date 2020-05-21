@@ -16,6 +16,7 @@ from tensorflow import keras
 
 import azure.functions as func
 
+logging.getLogger("azure.storage.common.storageclient").setLevel(logging.WARNING)
 
 da = None
 sa = None
@@ -42,6 +43,16 @@ def main(
         parent = pathlib.Path(__file__).parent
         path = os.path.join(parent, 'model', 'autoyahtzee.h5')
         model = keras.models.load_model(path)
+
+    prediction_ids = da.get_predictions(throw_id)
+    if len(prediction_ids) > 0:
+        logging.info('Blob was processed earlier')
+
+        logging.info('Removing records from a blob storage')
+        sa.clear_blobs(throw_id, prediction_ids)
+
+        logging.info('Removing records from a SQL storage')
+        da.delete_throw(throw_id)
 
     tf = tempfile.NamedTemporaryFile(delete=False, suffix='.mp4')
 
