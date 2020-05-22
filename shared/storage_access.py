@@ -11,7 +11,7 @@ class StorageAccess:
         self.prediction_container = blob_service_client.get_container_client(
             "autoyahtzee-predictions")
         self.webm_container = blob_service_client.get_container_client(
-            "autoyahtzee-processed-video-container")
+            "autoyahtzee-processed-video-container-webm")
         self.mp4_container = blob_service_client.get_container_client(
             "autoyahtzee-processed-video-container-mp4")
         self.jpg_container = blob_service_client.get_container_client(

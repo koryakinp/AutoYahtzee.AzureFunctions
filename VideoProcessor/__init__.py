@@ -59,6 +59,9 @@ def main(
     with open(tf.name, "wb") as f:
         f.write(inputblob.read())    
 
+    logging.info('Savinsg Throw ' + throw_id + ' to SQL')
+    da.insert_throw(throw_id)
+
     logging.info('Processing Video %s', tf.name)
     mp4, webm, jpg = process_video(tf.name)
 
@@ -70,9 +73,6 @@ def main(
 
     logging.info('Uploading ' + throw_id + '.jpg')
     sa.upload_image(jpg, throw_id)
-
-    logging.info('Savinsg Throw ' + throw_id + ' to SQL')
-    da.insert_throw(throw_id)
 
     logging.info('Processing Image')
     dice_images, peaks = process_image(jpg)
