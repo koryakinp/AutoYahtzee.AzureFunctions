@@ -45,7 +45,9 @@ def main(
         model = keras.models.load_model(path)
 
     prediction_ids = da.get_predictions(throw_id)
-    if len(prediction_ids) > 0:
+    throw_ids =  da.get_throw(throw_id)
+
+    if len(prediction_ids) > 0 or len(throw_ids) > 0:
         logging.info('Blob was processed earlier')
 
         logging.info('Removing records from a blob storage')
