@@ -42,28 +42,31 @@ class StorageAccess:
             self.delete_prediction_if_exists(prediction_id)
 
     def delete_mp4_if_exists(self, throw_id):
-        if check_if_blob_exists(blob_name, self.mp4_container):
+        blob_name = throw_id + '.mp4'
+        if self.check_if_blob_exists(blob_name, self.mp4_container):
             self.mp4_container.delete_blob(throw_id + '.mp4')
 
     def delete_webm_if_exists(self, throw_id):
-        if check_if_blob_exists(blob_name, self.webm_container):
-            self.webm_container.delete_blob(throw_id + '.webm')
+        blob_name = throw_id + '.webm'
+        if self.check_if_blob_exists(blob_name, self.webm_container):
+            self.webm_container.delete_blob(blob_name)
 
     def delete_jpg_if_exists(self, throw_id):
-        if check_if_blob_exists(blob_name, self.jpg_container):
-            self.jpg_container.delete_blob(throw_id + '.jpg')
+        blob_name = throw_id + '.jpg'
+        if self.check_if_blob_exists(blob_name, self.jpg_container):
+            self.jpg_container.delete_blob(blob_name)
 
     def delete_prediction_if_exists(self, prediction_id):
-        if check_if_blob_exists(blob_name, self.prediction_container):
-            self.prediction_container.delete_blob(prediction_id + '.jpg')
+        blob_name = prediction_id + '.jpg'
+        if self.check_if_blob_exists(blob_name, self.prediction_container):
+            self.prediction_container.delete_blob(blob_name)
 
 
-    def check_if_blob_exists(blob_name, container):
+    def check_if_blob_exists(self, blob_name, container):
         try:
             blob_properties = container.get_blob_client(blob_name).get_blob_properties()
             return True
         except ResourceNotFoundError as ex:
-            print(ex)
             return False
 
 
