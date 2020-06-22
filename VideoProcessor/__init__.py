@@ -88,14 +88,15 @@ def main(
     dice_images, peaks = process_image(jpg)
 
     logging.info('Running Prediction')
-    prediction, confidence, label = predict(dice_images, model)
+    predictions, confidences, label = predict(dice_images, model)
 
     logging.info('Extracting Dice images')
-    di = get_dice_images_for_human(jpg, peaks)
+    di, prediction_ids = get_dice_images_for_human(jpg, peaks)
 
     logging.info('Saving to Azure Container')
-    for image_to_upload in di:
-        sa.upload_prediction(os.path.abspath(image_to_upload.name))
+    for (di, prediction_id) in list(zip(di, prediction_ids)):
+        filename = os.path.abspath(di.name)
+        sa.upload_prediction(filename, prediction_id)
 
     logging.info('Saving to SQL')
-    da.insert_prediction(throw_id, prediction, confidence)
+    da.insert_prediction(throw_id, predictions, confidences, prediction_ids)

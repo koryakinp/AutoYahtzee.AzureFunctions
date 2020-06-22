@@ -2,6 +2,7 @@ import cv2
 import math
 import os
 import glob
+import uuid
 import numpy as np
 import tensorflow as tf
 import tempfile
@@ -138,16 +139,19 @@ def get_dice_images_for_human(filename, peaks):
     image = cv2.imread(filename)
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     filenames = []
+    prediction_ids = []
 
     for peak in peaks:
         cx = peak[1][0]
         cy = peak[0][0]
         data = image[cy - size:cy + size, cx - size:cx + size]
         jpg = tempfile.NamedTemporaryFile(delete=False, suffix='.jpg')
+        prediction_id = str(uuid.uuid4())
+        prediction_ids.append(prediction_id)
         filenames.append(jpg)
         cv2.imwrite(jpg.name, data)
 
-    return filenames
+    return filenames, prediction_ids
 
 
 def get_dice_images(image, kernels):

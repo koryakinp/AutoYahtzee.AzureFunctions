@@ -17,9 +17,9 @@ class StorageAccess:
         self.jpg_container = blob_service_client.get_container_client(
             "autoyahtzee-processed-image-container")
 
-    def upload_prediction(self, filename):
+    def upload_prediction(self, filename, prediction_id):
         with open(filename, "rb") as data:
-            self.prediction_container.upload_blob(filename, data)
+            self.prediction_container.upload_blob(prediction_id + '.jpg', data)
 
     def upload_mp4(self, filename, throw_id):
         with open(filename, "rb") as data:

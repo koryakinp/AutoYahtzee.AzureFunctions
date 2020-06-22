@@ -30,10 +30,9 @@ class DataAccess:
         self.cursor.execute("DELETE FROM Throws WHERE Id = ?", throw_id)
         self.cnxn.commit()
 
-    def insert_prediction(self, throw_id, predictions, confidences):
-        ids = [str(uuid.uuid4()) for _ in predictions]
+    def insert_prediction(self, throw_id, predictions, confidences, prediction_ids):
         throw_ids = [throw_id for _ in predictions]
-        zipped = zip(ids, throw_ids, predictions, confidences)
+        zipped = zip(prediction_ids, throw_ids, predictions, confidences)
         zipped = list(zipped)
         self.cursor.executemany(
             "INSERT INTO " +
