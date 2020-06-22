@@ -67,14 +67,22 @@ def main(
     logging.info('Processing Video %s', tf.name)
     mp4, webm, jpg = process_video(tf.name)
 
+    jpgs = glob.glob("/home/site/wwwroot/*.jpg")
+    mp4s = glob.glob("/home/site/wwwroot/*.mp4")
+    webms = glob.glob("/home/site/wwwroot/*.webm")
+
+    logging.info('JPGs: ' + str(len(jpgs)))
+    logging.info('MP4s: ' + str(len(mp4s)))
+    logging.info('WEBMs: ' + str(len(webms)))
+
     logging.info('Uploading ' + throw_id + '.mp4')
-    sa.upload_mp4(mp4, throw_id)
+    sa.upload_mp4(os.path.abspath(mp4), throw_id)
 
     logging.info('Uploading ' + throw_id + '.webm')
-    sa.upload_webm(webm, throw_id)
+    sa.upload_webm(os.path.abspath(webm), throw_id)
 
     logging.info('Uploading ' + throw_id + '.jpg')
-    sa.upload_image(jpg, throw_id)
+    sa.upload_image(os.path.abspath(jpg), throw_id)
 
     logging.info('Processing Image')
     dice_images, peaks = process_image(jpg)
@@ -87,7 +95,7 @@ def main(
 
     logging.info('Saving to Azure Container')
     for image_to_upload in di:
-        sa.upload_prediction(image_to_upload)
+        sa.upload_prediction(os.path.abspath(image_to_upload.name))
 
     logging.info('Saving to SQL')
-    da.insert_prediction(di, throw_id, prediction, confidence)
+    da.insert_prediction(throw_id, prediction, confidence)

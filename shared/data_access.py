@@ -1,4 +1,5 @@
 import pyodbc
+import uuid
 
 
 class DataAccess:
@@ -29,9 +30,10 @@ class DataAccess:
         self.cursor.execute("DELETE FROM Throws WHERE Id = ?", throw_id)
         self.cnxn.commit()
 
-    def insert_prediction(self, di, throw_id, prediction, confidence):
-        throw_ids = [throw_id for my_object in prediction]
-        zipped = zip(di, throw_ids, prediction, confidence)
+    def insert_prediction(self, throw_id, predictions, confidences):
+        ids = [str(uuid.uuid4()) for _ in predictions]
+        throw_ids = [throw_id for _ in predictions]
+        zipped = zip(ids, throw_ids, predictions, confidences)
         zipped = list(zipped)
         self.cursor.executemany(
             "INSERT INTO " +

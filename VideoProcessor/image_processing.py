@@ -4,7 +4,7 @@ import os
 import glob
 import numpy as np
 import tensorflow as tf
-import uuid
+import tempfile
 
 from sklearn.cluster import MiniBatchKMeans
 from tensorflow import keras
@@ -143,10 +143,9 @@ def get_dice_images_for_human(filename, peaks):
         cx = peak[1][0]
         cy = peak[0][0]
         data = image[cy - size:cy + size, cx - size:cx + size]
-
-        jpg = str(uuid.uuid4()) + '.jpg'
+        jpg = tempfile.NamedTemporaryFile(delete=False, suffix='.jpg')
         filenames.append(jpg)
-        cv2.imwrite(jpg, data)
+        cv2.imwrite(jpg.name, data)
 
     return filenames
 

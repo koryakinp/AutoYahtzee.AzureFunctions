@@ -1,6 +1,8 @@
 import cv2
 import numpy as np
-import uuid
+import logging
+import tempfile
+import os
 
 
 def running_mean(x, N):
@@ -77,10 +79,11 @@ def save_video(name, data, fps, codec):
     shape = data[0].shape
     shape = (shape[1], shape[0])
     
-    out = cv2.VideoWriter(name,cv2.VideoWriter_fourcc(*codec), fps, shape)
+    out = cv2.VideoWriter(name, cv2.VideoWriter_fourcc(*codec), fps, shape)
 
     for i in range(len(data)):
         out.write(data[i])
+
     out.release()
 
 def save_image(name, data):
@@ -111,15 +114,22 @@ def process_video(
     processed_frames = [shift_image(frame, (480, 480), top, left) for frame in processed_frames]
     processed_frames = [crop_image(frame, 40,410,30,410) for frame in processed_frames]
 
-    mp4 = str(uuid.uuid4()) + '.mp4'
-    webm = str(uuid.uuid4()) + '.webm'
-    jpg = str(uuid.uuid4()) + '.jpg'
+    mp4 = tempfile.NamedTemporaryFile(delete=False, suffix='.mp4')
+    webm = tempfile.NamedTemporaryFile(delete=False, suffix='.webm')
+    jpg = tempfile.NamedTemporaryFile(delete=False, suffix='.jpg')
 
-    save_video(webm, processed_frames, 25, 'vp80')
-    save_video(mp4, processed_frames, 25, 'mp4v')
-    save_image(jpg, processed_frames[-1])
+    logging.info('Frames to processed: ' + str(len(processed_frames)))
 
-    return mp4, webm, jpg
+    save_video(webm.name, processed_frames, 25, 'vp80')
+    logging.info('WEBM saved: ' + str(os.path.isfile(webm.name)))
+
+    save_video(mp4.name, processed_frames, 25, 'mp4v')
+    logging.info('MP4 saved: ' + str(os.path.isfile(mp4.name)))
+
+    save_image(jpg.name, processed_frames[-1])
+    logging.info('JPG saved: ' + str(os.path.isfile(jpg.name)))
+
+    return mp4.name, webm.name, jpg.name
 
 
 
